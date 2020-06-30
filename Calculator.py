@@ -10,7 +10,7 @@
 	+ -> addition operator
 	- -> subtraction operator
 	* -> multiplication operator
-	/ -> division operatorr
+	/ -> division operator
 	^ -> exponent operator (will appear as ** in console)
 	() -> inputs brackets into the calculator (open bracket on first click, closed on second)
 	C -> clears the console
