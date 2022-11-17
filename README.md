@@ -1,4 +1,4 @@
-# Calculator-GUI-With-Plotting-Feature
+Simple Graphing Calculator Allowing users to do basic operations as well as plot functions with a reasonable degree of accuracy.
 
 """ USER INFORMATION
 	
@@ -9,7 +9,7 @@
 	- -> subtraction operator
 	* -> multiplication operator
 	/ -> division operatorr
-	^ -> exponent operator (will appear as ** in console)
+	^ -> exponent operator
 	() -> inputs brackets into the calculator (open bracket on first click, closed on second)
 	C -> clears the console
 	x -> inputs a variable x into the console (used for plotting)
