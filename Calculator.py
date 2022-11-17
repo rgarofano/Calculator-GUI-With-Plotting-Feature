@@ -11,7 +11,7 @@
 	- -> subtraction operator
 	* -> multiplication operator
 	/ -> division operator
-	^ -> exponent operator (will appear as ** in console)
+	^ -> exponent operator
 	() -> inputs brackets into the calculator (open bracket on first click, closed on second)
 	C -> clears the console
 	x -> inputs a variable x into the console (used for plotting)
@@ -20,7 +20,9 @@
 		-> Follow MATLAB syntax for example 2x must be inputted as 2*x
 	= -> evaluates expression
 """
+
 # ~~~~~ Imports ~~~~~ #
+
 import tkinter as tk
 
 from tkinter import *
