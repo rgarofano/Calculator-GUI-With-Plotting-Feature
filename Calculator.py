@@ -1,10 +1,10 @@
-# Calculator
+# Graphing Calculator
 # Ryan Garofano
 # June 27th, 2020
 
 """ USER INFORMATION
 	
-	Button Functions:
+	BTN Functions:
 
 	0,1,2,3,4,5,6,7,8,9 -> Inputs number into calculator
 	+ -> addition operator
@@ -20,118 +20,238 @@
 		-> Follow MATLAB syntax for example 2x must be inputted as 2*x
 	= -> evaluates expression
 """
-#~~~~~ Imports ~~~~~#
+# ~~~~~ Imports ~~~~~ #
+import tkinter as tk
+
 from tkinter import *
 import numpy
-import matplotlib.pyplot as matlab
-import math
-#~~~~~ Functions ~~~~~#
+import matplotlib.pyplot as plot
 
-def click_button(number):
+# ~~~~~ Constants ~~~~~ #
 
-	# update display with the user input
-	global operation
-	operation = operation + str(number)
-	user_input.set(operation)
+OPEN_BRACKET = 0
+CLOSED_BRACKET = 1
+CLEAR_CONSOLE = ""
+BTN_0_TEXT = "0"
+BTN_0_ROW = 4
+BTN_0_COL = 0
+BTN_1_TEXT = "1"
+BTN_1_ROW = 3
+BTN_1_COL = 0
+BTN_2_TEXT = "2"
+BTN_2_ROW = 3
+BTN_2_COL = 1
+BTN_3_TEXT = "3"
+BTN_3_ROW = 3
+BTN_3_COL = 2
+BTN_4_TEXT = "4"
+BTN_4_ROW = 2
+BTN_4_COL = 0
+BTN_5_TEXT = "5"
+BTN_5_ROW = 2
+BTN_5_COL = 1
+BTN_6_TEXT = "6"
+BTN_6_ROW = 2
+BTN_6_COL = 2
+BTN_7_TEXT = "7"
+BTN_7_ROW = 1
+BTN_7_COL = 0
+BTN_8_TEXT = "8"
+BTN_8_ROW = 1
+BTN_8_COL = 1
+BTN_9_TEXT = "9"
+BTN_9_ROW = 1
+BTN_9_COL = 2
+BTN_ADD_TEXT = "+"
+BTN_ADD_ROW = 1
+BTN_ADD_COL = 3
+BTN_SUB_TEXT = "-"
+BTN_SUB_ROW = 2
+BTN_SUB_COL = 3
+BTN_MULT_TEXT = "*"
+BTN_MULT_ROW = 3
+BTN_MULT_COL = 3
+BTN_DIV_TEXT = "/"
+BTN_DIV_ROW = 4
+BTN_DIV_COL = 3
+BTN_EXP_TEXT = "^"
+BTN_EXP_ROW = 4
+BTN_EXP_COL = 1
+BTN_BRACKETS_TXT = "()"
+BTN_BRACKETS_ROW = 5
+BTN_BRACKETS_COL = 0
+BTN_VAR_TXT = "x"
+BTN_VAR_ROW = 4
+BTN_VAR_COL = 2
+BTN_EQUAL_TXT = "="
+BTN_EQUAL_ROW = 5
+BTN_EQUAL_COL = 3
+BTN_CLEAR_TXT = "C"
+BTN_CLEAR_ROW = 5
+BTN_CLEAR_COL = 1
+BTN_PLOT_TXT = "P"
+BTN_PLOT_ROW = 5
+BTN_PLOT_COL = 2
+NUMBER_BTN_COLOR = "powder blue"
+OPERATOR_BTN_COLOR = "light green"
+PLOT_BTN_COLOR = "purple"
 
 
-def equals():
-
-	# evaluate the operation
-	global operation
-	result = str(eval(operation))
-	user_input.set(result)
-
-	operation = ""
+# ~~~~~ Helper Functions ~~~~~#
 
 
-def clear():
-
-	# clear screen
-	global operation
-	operation = ""
-	user_input.set(operation)
+def add_text_to_console(console_text, text_to_append):
+    updated_text = console_text.get() + text_to_append
+    console_text.set(updated_text)
 
 
-def add_brackets():
+def evaluate_input(console_text):
+    try:
+        evaluated_expression = str(eval(console_text.get()))
 
-	global operation
-	global switcher
+    except SyntaxError:
+        clear(console_text)
+        add_text_to_console(console_text, "ERROR")
+        return
 
-	# create a switching algorithm so that the brackets can work as intended
-	if switcher == 0:
-
-		operation = operation + "("
-		switcher = 1
-
-	elif switcher == 1:
-
-		operation = operation + ")"
-		switcher = 0
-
-	user_input.set(operation)
-
-def create_plot():
-
-	global operation
-
-	# create vectors
-	x = numpy.linspace(1,100,1000)
-	y = eval(bytes([ord(p) for p in operation]))
-
-	# plot function
-	matlab.plot(x,y)
-
-	# format plot figure window and display the figure
-	matlab.xlabel('x-axis')
-	matlab.ylabel('y-axis')
-	matlab.title('Plot from x = 0 to 100')
-	matlab.grid()
-	matlab.legend()
-	matlab.show()
+    console_text.set(evaluated_expression)
 
 
-#~~~~~ Main Code ~~~~~#
+def clear(console_text):
+    console_text.set(CLEAR_CONSOLE)
 
-# initialize GUI
-calculator = Tk()
 
-# provide a title for the window
-calculator.title("Calculator")
+def add_brackets(console_text):
+    global bracket_type
 
-# initialize a string variable for storing button information
-user_input = StringVar()
-operation = ""
+    if bracket_type == OPEN_BRACKET:
+        add_text_to_console(console_text, "(")
+        bracket_type = CLOSED_BRACKET
 
-# initialize switching variable (see add_brackets() definition)
-switcher = 0
+    elif bracket_type == CLOSED_BRACKET:
+        add_text_to_console(console_text, ")")
+        bracket_type = OPEN_BRACKET
 
-# Create calculator "console screen"
-console = Entry(calculator, width =50, borderwidth = 5, bg = "grey", textvariable = user_input)
-console.grid(row=0,column=0,columnspan=4,padx=10,pady=10)
+    else:
+        raise ValueError("Illegal bracket type specified")
 
-# Create number buttons and assign functions to them
-Button_0 = Button(text = "0", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(0)).grid(row=4,column=0)
-Button_1 = Button(text = "1", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(1)).grid(row=3,column=0)
-Button_2 = Button(text = "2", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(2)).grid(row=3,column=1)
-Button_3 = Button(text = "3", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(3)).grid(row=3,column=2)
-Button_4 = Button(text = "4", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(4)).grid(row=2,column=0)
-Button_5 = Button(text = "5", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(5)).grid(row=2,column=1)
-Button_6 = Button(text = "6", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(6)).grid(row=2,column=2)
-Button_7 = Button(text = "7", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(7)).grid(row=1,column=0)
-Button_8 = Button(text = "8", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(8)).grid(row=1,column=1)
-Button_9 = Button(text = "9", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "powder blue", bd = 5, command = lambda: click_button(9)).grid(row=1,column=2)
 
-# Create operator buttons and assign them functions
-Button_add = Button(text = "+", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("+")).grid(row=1,column=3)
-Button_sub = Button(text = "-", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("-")).grid(row=2,column=3)
-Button_multiply = Button(text = "*", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("*")).grid(row=3,column=3)
-Button_divide = Button(text = "/", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("/")).grid(row=4,column=3)
-Button_exponent = Button(text = "^", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("**")).grid(row=4,column=1)
-Button_brackets = Button(text = "()", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: add_brackets()).grid(row=5,column=0)
-Button_variable = Button(text = "x", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: click_button("x")).grid(row=4,column=2)
-Button_equal = Button(text = "=", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: equals()).grid(row=5,column=3)
-Button_clear = Button(text = "C", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: clear()).grid(row=5,column=1)
-Button_plot = Button(text = "P", font = ("arial",12,"bold"), padx = 40, pady = 20, bg = "light green", bd = 5, command = lambda: create_plot()).grid(row=5,column=2)
+def function_from_string(func_str):
+    return lambda x: eval(func_str)
 
-calculator.mainloop()
+
+def create_plot(console_text):
+    console_input = console_text.get()
+    func_str = console_input.replace("^", "**")
+    # create vectors
+    x_values = numpy.linspace(1, 100, 1000)
+    function = function_from_string(func_str)
+
+    try:
+        y_values = [function(x) for x in x_values]
+
+    except SyntaxError:
+        clear(console_text)
+        add_text_to_console(console_text, "ERROR")
+        return
+
+    # create plot
+    plot.plot(x_values, y_values)
+
+    # format plot figure window and display the figure
+    plot.xlabel("x-axis")
+    plot.ylabel("y-axis")
+    plot.title("y = " + console_input)
+    plot.grid()
+    plot.legend()
+    plot.show()
+
+
+def create_button(button_text, color, on_click_function, row, col):
+    Button(text=button_text, font=("arial", 12, "bold"), padx=40, pady=20, bg=color, bd=5,
+           command=on_click_function) \
+        .grid(row=row, column=col)
+
+
+def add_number_buttons(console_text):
+    create_button(BTN_0_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_0_TEXT),
+                  BTN_0_ROW, BTN_0_COL)
+    create_button(BTN_1_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_1_TEXT),
+                  BTN_1_ROW, BTN_1_COL)
+    create_button(BTN_2_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_2_TEXT),
+                  BTN_2_ROW, BTN_2_COL)
+    create_button(BTN_3_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_3_TEXT),
+                  BTN_3_ROW, BTN_3_COL)
+    create_button(BTN_4_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_4_TEXT),
+                  BTN_4_ROW, BTN_4_COL)
+    create_button(BTN_5_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_5_TEXT),
+                  BTN_5_ROW, BTN_5_COL)
+    create_button(BTN_6_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_6_TEXT),
+                  BTN_6_ROW, BTN_6_COL)
+    create_button(BTN_7_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_7_TEXT),
+                  BTN_7_ROW, BTN_7_COL)
+    create_button(BTN_8_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_8_TEXT),
+                  BTN_8_ROW, BTN_8_COL)
+    create_button(BTN_9_TEXT, NUMBER_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_9_TEXT),
+                  BTN_9_ROW, BTN_9_COL)
+
+
+def add_operator_buttons(console_text):
+    create_button(BTN_ADD_TEXT, OPERATOR_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_ADD_TEXT),
+                  BTN_ADD_ROW, BTN_ADD_COL)
+    create_button(BTN_SUB_TEXT, OPERATOR_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_SUB_TEXT),
+                  BTN_SUB_ROW, BTN_SUB_COL)
+    create_button(BTN_MULT_TEXT, OPERATOR_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_MULT_TEXT),
+                  BTN_MULT_ROW, BTN_MULT_COL)
+    create_button(BTN_DIV_TEXT, OPERATOR_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_DIV_TEXT),
+                  BTN_DIV_ROW, BTN_DIV_COL)
+    create_button(BTN_EXP_TEXT, OPERATOR_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_EXP_TEXT),
+                  BTN_EXP_ROW, BTN_EXP_COL)
+    create_button(BTN_EQUAL_TXT, OPERATOR_BTN_COLOR, lambda: evaluate_input(console_text),
+                  BTN_EQUAL_ROW, BTN_EQUAL_COL)
+
+
+def add_brackets_button(console_text):
+    create_button(BTN_BRACKETS_TXT, OPERATOR_BTN_COLOR, lambda: add_brackets(console_text),
+                  BTN_BRACKETS_ROW, BTN_BRACKETS_COL)
+
+
+def add_plot_buttons(console_text):
+    create_button(BTN_VAR_TXT, PLOT_BTN_COLOR, lambda: add_text_to_console(console_text, BTN_VAR_TXT),
+                  BTN_VAR_ROW, BTN_VAR_COL)
+    create_button(BTN_PLOT_TXT, PLOT_BTN_COLOR, lambda: create_plot(console_text),
+                  BTN_PLOT_ROW, BTN_PLOT_COL)
+
+
+def add_clear_button(console_text):
+    create_button(BTN_CLEAR_TXT, OPERATOR_BTN_COLOR, lambda: clear(console_text),
+                  BTN_CLEAR_ROW, BTN_CLEAR_COL)
+
+
+def initialize_gui(calculator_gui):
+    calculator_gui.title("Graphing Calculator")
+
+    console_text = tk.StringVar(master=calculator_gui, value=CLEAR_CONSOLE)
+    console = Entry(calculator_gui, width=50, borderwidth=5, bg="grey", textvariable=console_text)
+    console.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+
+    add_number_buttons(console_text)
+    add_operator_buttons(console_text)
+    add_brackets_button(console_text)
+    add_plot_buttons(console_text)
+    add_clear_button(console_text)
+
+
+# ~~~~~ Main Function ~~~~~#
+
+
+def main():
+    calculator = tk.Tk()
+    initialize_gui(calculator)
+    calculator.mainloop()
+
+
+# ~~~~~ Run Program ~~~~~#
+
+bracket_type = OPEN_BRACKET
+main()
